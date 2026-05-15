@@ -141,7 +141,10 @@ function sendCard(psid, title, subtitle, photo, whatsapp) {
       recipient: { id: psid },
       message: { attachment: { type: "template", payload: { template_type: "generic", elements: [{ title, subtitle, image_url: photo, default_action: { type: "web_url", url: trackUrl, webview_height_ratio: "tall" }, buttons: [{ type: "web_url", url: trackUrl, title: buttonText }] }] } } }
     })
-  }).then(r => r.json()).then(data => console.log('Card sent:', data.message_id || data.error?.message));
+  }).then(r => r.json()).then(data => {
+    if (data.error) { trackMessage(false); console.log('Card failed:', data.error.message); }
+    else { trackMessage(true); console.log('Card sent:', data.message_id); }
+  }).catch(err => { trackMessage(false); console.error('Card error:', err); });
 }
 
 function uptimeText() {
